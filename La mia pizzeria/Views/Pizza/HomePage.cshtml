@@ -1,0 +1,114 @@
+﻿
+
+@model List<Pizza>
+
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>La mia pizzeria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  </head>
+  
+  <body>
+
+      <a class="btn btn-primary"
+                href="@Url.Action("Create", "Pizza")">
+                Nuovo post
+      </a>
+
+   
+
+@if(Model.Count() ==0)
+    {
+        <h3>Non sono presenti Pizze</h3>
+    } else
+    {
+        
+        
+        <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Numero Pizza</th>
+      <th scope="col">Foto</th>
+      <th scope="col">Nome Pizza</th>
+      <th scope="col">Descrizione Pizza</th>
+    </tr>
+  </thead>
+ 
+  <tbody>
+
+      @foreach(Pizza pizzeDellaLista in Model)
+                    {
+                       <tr>
+                          <td>@pizzeDellaLista.Id</td>
+                          @* <th scope="row">1</th>*@
+                          <td><img src="@pizzeDellaLista.Image" class="img-fluid"></td>
+                          <td>@pizzeDellaLista.Name</td>
+                          <td>@pizzeDellaLista.Description</td>
+                          <td>
+                              <a class="btn btn-info btn-sm" href="/Pizza/Details/@pizzeDellaLista.Id" >
+                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>                               
+                               </svg>
+                              </a>
+                          </td>
+                        </tr> 
+                      }
+   </tbody>
+</table>
+
+}
+
+
+        
+
+@*<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Numero Pizza</th>
+      <th scope="col">Foto</th>
+      <th scope="col">Nome Pizza</th>
+      <th scope="col">Descrizione Pizza</th>
+    </tr>
+  </thead>
+ 
+  <tbody>
+     
+      
+      <tr>
+      <th scope="row">1</th>
+      <td><img src="~/img/Pizza-margherita.jpg" class="img-fluid" alt="Pizza Margherita"></td>
+      <td>Pizza Margherita</td>
+      <td>La pizza è molto buona!</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td><img src="~/img/pizza-marinara.jpg" class="img-fluid" alt="Pizza Marinara"></td>
+      <td>Pizza Marinara</td>
+      <td>La pizza è molto buona!</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td><img src="~/img/pizza-al-prosciutto-crudo.jpg" class="img-fluid" alt="Pizza con Prosciutto"></td>
+      <td>Pizza con Prosciutto</td>
+      <td>La pizza è molto buona!</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th scope="row">4</th>
+      <td><img src="~/img/pizza-con-tonno-e-mozzarella.jpg" class="img-fluid" alt="Pizza con Tonno"></td>
+      <td>Pizza con Tonno</td>
+      <td>La pizza è molto buona!</td>
+      <td></td>
+    </tr>*@
+
+ 
+      
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+  </body>
+
+</html>
