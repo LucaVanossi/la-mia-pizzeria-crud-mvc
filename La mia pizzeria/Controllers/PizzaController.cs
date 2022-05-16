@@ -1,4 +1,5 @@
-﻿using La_mia_pizzeria.Models;
+﻿using La_mia_pizzeria.Data;
+using La_mia_pizzeria.Models;
 using La_mia_pizzeria.Utils;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,14 @@ namespace La_mia_pizzeria.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<Pizza> pizze = PostData.GetPizze();
+            List<Pizza> pizze = new List<Pizza>();
+
+            using (BlogContext db = new BlogContext())
+            {
+                pizze = db.Pizze.ToList<Pizza>();
+            }
+            
+            //List<Pizza> pizze = PostData.GetPizze();
             
             return View("HomePage", pizze);
         }
@@ -18,26 +26,51 @@ namespace La_mia_pizzeria.Controllers
         [HttpGet]
         public IActionResult Details (int id)
         {
-            Pizza pizzaFound = GetPizzaById(id);
 
-            foreach(Pizza pizza in PostData.GetPizze())
+            using (BlogContext db = new BlogContext())
             {
-                if (pizza.Id == id)
+                try
                 {
-                    pizzaFound = pizza;
-                    break;
+                    Pizza pizzaFound = db.Pizze
+                         .Where(pPizza => pPizza.Id == id)
+                         .First();
+
+                    return View("Details", pizzaFound);
 
                 }
-            }
-        
-         if (pizzaFound != null)
-            {
-            return View("Details", pizzaFound);
+                catch (InvalidOperationException ex)
+                {
+                    return NotFound("Il post con id " + id + " non è stato trovato");
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest();
+                }
 
-            } else
-            {
-                return NotFound("Il post con id " + id + "non è stato trovato");
+
             }
+
+
+            //    Pizza pizzaFound = GetPizzaById(id);
+
+            //    foreach(Pizza pizza in PostData.GetPizze())
+            //    {
+            //        if (pizza.Id == id)
+            //        {
+            //            pizzaFound = pizza;
+            //            break;
+
+            //        }
+            //    }
+
+            // if (pizzaFound != null)
+            //    {
+            //    return View("Details", pizzaFound);
+
+            //    } else
+            //    {
+            //        return NotFound("Il post con id " + id + "non è stato trovato");
+            //    }
 
         }
 
@@ -56,10 +89,18 @@ namespace La_mia_pizzeria.Controllers
                 return View("FormPizza" , nuovaPizza);
             }
 
-            Pizza pizzaConId = new Pizza(PostData.GetPizze().Count, nuovaPizza.Name , nuovaPizza.Description , nuovaPizza.Image);
+            using (BlogContext db = new BlogContext())
+            {
+                Pizza pizzaToCreate = new Pizza(nuovaPizza.Name, nuovaPizza.Description, nuovaPizza.Image);
+
+                db.Pizze.Add(pizzaToCreate);
+                db.SaveChanges();
+            }
+
+            //Pizza pizzaConId = new Pizza(PostData.GetPizze().Count, nuovaPizza.Name , nuovaPizza.Description , nuovaPizza.Image);
 
             //Il mio modello è corretto
-            PostData.GetPizze().Add(pizzaConId);
+            //PostData.GetPizze().Add(pizzaConId);
 
             return RedirectToAction("Index");
         }
@@ -67,12 +108,20 @@ namespace La_mia_pizzeria.Controllers
         [HttpGet]
         public IActionResult Update(int id)
         {
-            Pizza pizzaToEdit = GetPizzaById(id);
+            Pizza pizzaToEdit = null;
 
-            if(pizzaToEdit == null)
+            using (BlogContext db = new BlogContext())
+            {
+                pizzaToEdit = db.Pizze
+                         .Where(pPizza => pPizza.Id == id)
+                         .First();
+            }
+
+            if (pizzaToEdit == null)
             {
                 return NotFound();
-            } else
+            }
+            else
             {
                 return View("Update", pizzaToEdit);
             }
@@ -86,13 +135,23 @@ namespace La_mia_pizzeria.Controllers
                 return View("FormPizza", modello);
             }
 
-            Pizza pizzaOriginal = GetPizzaById(id);
+            Pizza pizzaToEdit = null;
 
-            if (pizzaOriginal != null)
+            using (BlogContext db = new BlogContext())
             {
-                pizzaOriginal.Name = modello.Name;
-                pizzaOriginal.Description = modello.Description;
-                pizzaOriginal.Image = modello.Image;
+                pizzaToEdit = db.Pizze
+                         .Where(pPizza => pPizza.Id == id)
+                         .First();
+
+                db.SaveChanges();
+
+            if (pizzaToEdit != null)
+            {
+                pizzaToEdit.Name = modello.Name;
+                pizzaToEdit.Description = modello.Description;
+                pizzaToEdit.Image = modello.Image;
+
+                
 
                 return RedirectToAction("Index");
             }
@@ -100,52 +159,40 @@ namespace La_mia_pizzeria.Controllers
             {
                 return NotFound();
             }
+
+            }
+
         }
 
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            int PizzaIndexToRemove = -1;
 
-            List<Pizza> pizzaList = PostData.GetPizze();
-            
-            for(int i=0; i < pizzaList.Count; i++)
+            using (BlogContext db = new BlogContext())
             {
-                if (pizzaList[i].Id == id);
+                Pizza pizzaToDelete = db.Pizze
+                         .Where(pPizza => pPizza.Id == id)
+                         .First();
+
+                if(pizzaToDelete != null)
                 {
-                    PizzaIndexToRemove = i;
+                    db.Pizze.Remove(pizzaToDelete);
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return NotFound();
                 }
             }
 
-            if(PizzaIndexToRemove != -1)
-            {
-                PostData.GetPizze().RemoveAt(PizzaIndexToRemove);
+        }
 
-                return RedirectToAction("Index");
-            } else
-            {
-                return NotFound();
-            }
             
-        }
-        
-        
-        private Pizza GetPizzaById(int id)
-        {
-            Pizza pizzaFound = null;
 
-            foreach (Pizza pizza in PostData.GetPizze())
-            {
-                if (pizza.Id == id)
-                {
-                    pizzaFound = pizza;
-                    break;
-
-                }
-            }
-
-            return pizzaFound;
-        }
     }
+        
+        
 }
-
+    

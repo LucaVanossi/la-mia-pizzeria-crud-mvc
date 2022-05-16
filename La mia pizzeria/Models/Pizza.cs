@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace La_mia_pizzeria.Models
 {
     public class Pizza
-    {
+
+        {
+
+        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage ="Il campo Nome è obbligatorio")]
@@ -11,6 +15,7 @@ namespace La_mia_pizzeria.Models
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Il campo descrizione è obbligatorio")]
+        [Column(TypeName = "text")]
         public string Description { get; set; }
 
         [Required(ErrorMessage = "L'URL dell'immagine è obbligatorio")]
@@ -22,9 +27,8 @@ namespace La_mia_pizzeria.Models
 
         }
 
-        public Pizza ( int id, string name , string description , string image)
+        public Pizza (string name , string description , string image)
         {
-            this.Id = id;
             this.Name = name;
             this.Description = description;
             this.Image = image;
