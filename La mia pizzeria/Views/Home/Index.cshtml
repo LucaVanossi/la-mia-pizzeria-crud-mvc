@@ -1,1 +1,65 @@
-﻿<h1>Benvenuto nel mio sito</h1>
+﻿
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-around-content-between align-items-center">
+                <h1 class="mt-3 mb-3">Lista Pizze</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row js_no_post text-center d-none">
+        <div class="col-12">
+            <h3>Non sono presenti pizze</h3>
+        </div>
+    </div>
+    <div class="row js_post_cards d-none">
+        <!--qui verranno visualizzate le pizze-->
+    </div>
+</div>
+
+@section Script {
+    
+    <script type="text/javascript">
+    
+        loadPizzas();
+        
+        function loadPizzas () {
+
+        axios.get('/api/Pizzas/Get').then((result) => {
+            //Codice che verrà eseguito quando arrivano i dati dalle api
+            console.log("Ho ricevuto le mie pizze!");
+
+            if(result.data.lenght == 0)
+            {
+                document.querySelector('.js_post_cards').classList.add('d-none');
+            } else {
+                document.querySelector('.js_no_post').classList.add('d-none');
+
+                result.data.forEach(pizza => {
+                    document.querySelector('js_post_cards').innerHTML += 
+                    `
+                    <div class="col-12 col-md-4 p-2"
+                        <div class="card">
+                          <img class="card-img-top" src="${pizza.Image}" alt="${pizza.Description}">
+                          <div class="card-body">
+                            <h5 class="card-title">${pizza.Name}</h5>
+                            <p class="card-text">${pizza.Description}</p>
+                          </div>
+                    </div>
+                    </div>
+                    `
+                  
+                });
+            }
+        }
+
+        ).catch((error) => {
+            console.log("C'è stato un errore: " + error);
+        });
+        
+    }
+
+    </script>
+}
+
